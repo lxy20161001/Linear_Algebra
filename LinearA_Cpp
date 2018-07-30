@@ -81,6 +81,21 @@ public:
         return str;
     }
 
+    friend ostream &operator<<(ostream &out,MinVector<T> vec) {
+
+        out<<"(";
+        for(int i = 0; i <vec.vec.size();i++){
+            if(i!=vec.vec.size()-1){
+                out<<vec.vec[i]<<',';
+            }else{
+                out<<vec.vec[i];
+            }
+        }
+
+        out<<")";
+        return out;
+    }
+
 public:
     static std::string zero_print(vector<T> vec){
         std::string str;
@@ -119,7 +134,7 @@ public:
 
         return MinVector(newVec);
     }
-    
+
 
     MinVector<T> add3(MinVector<T> minVector){
         assert(this->vec.size() == minVector.vec.size());
@@ -130,6 +145,17 @@ public:
         }
 
         return MinVector(newVec);
+    }
+
+    MinVector<T> operator+(MinVector<T>& b) {
+        assert(this->vec.size() ==b.vec.size());
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(this->vec[i]+b.vec[i]);
+        }
+        MinVector<T> box = MinVector<T>(newVec);
+        return box;
     }
 
 
@@ -155,6 +181,17 @@ public:
         return MinVector(newVec);
     }
 
+    MinVector<T> operator-(MinVector<T>& b) {
+        assert(this->vec.size() ==b.vec.size());
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(this->vec[i]-b.vec[i]);
+        }
+        MinVector<T> box = MinVector<T>(newVec);
+        return box;
+    }
+
 
     MinVector<T> mul(T k){
 
@@ -166,6 +203,16 @@ public:
         return MinVector(newVec);
     }
 
+    MinVector<T> operator*(T k) {
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(this->vec[i]*k);
+        }
+        MinVector<T> box = MinVector<T>(newVec);
+        return box;
+    }
+
     MinVector<T> rmul(T k){
 
         vector<T> newVec;
@@ -175,6 +222,13 @@ public:
 
         return MinVector(newVec);
     }
+
+    friend MinVector<T> operator*(int k,MinVector<T> r) {
+
+        MinVector<T> rmul(r.vec);
+        return rmul*k;
+    }
+
 
     double dot(vector<T> vec){
         assert(this->vec.size() == vec.size());
@@ -192,6 +246,16 @@ public:
         }
 
         return MinVector(newVec);
+    }
+
+    MinVector<T> operator/(T k) {
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back((1/k)*this->vec[i]);
+        }
+        MinVector<T> box = MinVector<T>(newVec);
+        return box;
     }
 
     MinVector<T> pos(){
@@ -304,5 +368,6 @@ public:
 
         return  MinVector(newVec);
     }
+
 
 };
