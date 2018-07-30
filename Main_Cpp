@@ -1,0 +1,53 @@
+#include <iostream>
+#include "MinVector.h"
+
+int main() {
+    vector<double> vec = {5,2};
+    vector<double> vec2 = {3,1};
+
+    MinVector<double> *intVec = new MinVector<double>(vec);
+    MinVector<double> *intVec2 = new MinVector<double>(vec2);
+
+    cout<<intVec->getitem(1)<<endl;
+    cout<<intVec->len()<<endl;
+    cout<<intVec->str()<<endl;
+    cout<<"vec + vec2 = "<<intVec->add2(vec2).repr_min()<<endl;
+    cout<<"vec + vec2 = "<<intVec->sub2(vec2).repr_min()<<endl;
+
+    cout<<"vec * 3 = "<<intVec->mul(3).repr_min()<<endl;
+    cout<<"3 * vec = "<<intVec->rmul(3).repr_min()<<endl;
+    cout<<"vec Pos = "<<intVec->pos().repr_min()<<endl;
+    cout<<"vec Neg = "<<intVec->neg().repr_min()<<endl;
+    cout<<"Zero = "<< MinVector<double>::zero_print(MinVector<double>::zero(3))<<endl;
+//
+    cout<<"vec + zero = "<<intVec->repr_min(intVec->add(MinVector<double>::zero(2)))<<endl;
+//
+    auto vecNew = intVec->rmul(4);
+    cout<<"vec + vec2 = "<<intVec->add3(vecNew).repr_min()<<endl;
+//
+    auto norm = intVec->norm();
+    auto norm2 = intVec2->norm();
+    cout<<"norm =>"<<intVec->str()<<" "<<norm<<endl;
+    cout<<"norm2 =>"<<intVec2->str()<<" "<<norm2<<endl;
+//
+    cout<<intVec->str()<<"   "<<intVec->nomalize().repr_min()<<endl;
+    cout<<intVec2->str()<<"   "<<intVec2->nomalize().repr_min()<<endl;
+//
+    cout<<intVec->norm(intVec->nomalize())<<endl;
+    cout<<intVec2->norm(intVec2->nomalize())<<endl;
+//
+    auto zeroVec = MinVector<double>::zero(2);
+    try {
+        cout<<intVec->nomalize(zeroVec).repr_min()<<endl;
+    }catch(const char* e){
+        cout<<"Attempted to divide by zero!"<<endl;
+    }
+//
+    double dot = intVec->dot(vec2);
+    cout<<dot<<endl;
+
+
+    delete intVec;
+    delete intVec2;
+    return 0;
+}
