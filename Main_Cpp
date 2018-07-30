@@ -2,6 +2,19 @@
 #include "MinVector.h"
 
 int main() {
+
+    ////////////////
+    以下是运算符重载后的输出
+    vector<double> vec = {5,2};
+    vector<double> vec2 = {3,1};
+    MinVector<double> n1 = MinVector<double>(vec);
+    MinVector<double> n2 = MinVector<double>(vec2);
+    MinVector<double> n3;
+
+    cout<<n1/3<<endl;
+    cout<<n2*3<<endl;
+    cout<<3*n2<<endl;
+    ///////////////
     vector<double> vec = {5,2};
     vector<double> vec2 = {3,1};
 
