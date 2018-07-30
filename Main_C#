@@ -1,0 +1,19 @@
+using System;
+using System.Collections.Generic;
+
+namespace ConsoleApplication1
+{
+    internal class Program
+    {
+        public static void Main(string[] args)
+        {
+            PlayLA vec = new PlayLA(new List<double>(){5,2});
+            PlayLA vec2 = new PlayLA(new List<double>(){3,1});
+            Console.WriteLine(vec.getItem(0));
+            Console.WriteLine(vec.toString());
+            Console.WriteLine(vec.add(vec2._value).toString());
+            Console.WriteLine(vec.mul(2).toString());
+            Console.WriteLine(vec2.toString());
+        }
+    }
+}
