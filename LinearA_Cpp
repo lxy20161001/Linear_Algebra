@@ -1,0 +1,308 @@
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <cassert>
+#include <cmath>
+
+
+using namespace std;
+
+const double EPSILON = 1e-8;
+
+template <typename T>
+class MinVector{
+private:
+    vector<T> vec;
+    static vector<T> staVec;
+public:
+    MinVector(){
+        this->vec = {};
+    }
+    MinVector(vector<T> vector1){
+        this->vec = vector1;
+    }
+    ~MinVector(){
+
+    }
+
+public:
+    int getitem(int index){
+        return this->vec[index];
+    }
+
+    int len(){
+        return this->vec.size();
+    }
+
+    std::string str(){
+        std::string str;
+        str.append("Vector(");
+        for(int i = 0; i <this->vec.size();i++){
+            if(i!=this->vec.size()-1){
+                str.append(std::to_string(this->vec[i])+',');
+            }else{
+                str.append(std::to_string(this->vec[i]));
+            }
+        }
+
+        str.append(")");
+        return str;
+
+    }
+
+
+    std::string repr_min(vector<T> vec){
+        std::string str;
+        str.append("(");
+        for(int i = 0; i <vec.size();i++){
+            if(i!=this->vec.size()-1){
+                str.append(std::to_string(vec[i])+',');
+            }else{
+                str.append(std::to_string(vec[i]));
+            }
+        }
+
+        str.append(")");
+        return str;
+    }
+
+    std::string repr_min(){
+        std::string str;
+        str.append("(");
+        for(int i = 0; i <this->vec.size();i++){
+            if(i!=this->vec.size()-1){
+                str.append(std::to_string(vec[i])+',');
+            }else{
+                str.append(std::to_string(vec[i]));
+            }
+        }
+
+        str.append(")");
+        return str;
+    }
+
+public:
+    static std::string zero_print(vector<T> vec){
+        std::string str;
+        str.append("(");
+        for(int i = 0; i <vec.size();i++){
+            if(i<vec.size()-1){
+                str.append(std::to_string(vec[i])+',');
+            }else{
+                str.append(std::to_string(vec[i]));
+            }
+        }
+
+        str.append(")");
+        return str;
+    }
+
+public:
+    vector<T> add(vector<T> vec){
+        assert(this->vec.size() == vec.size());
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(this->vec[i]+vec[i]);
+        }
+
+        return newVec;
+    }
+
+    MinVector<T> add2(vector<T> vec){
+        assert(this->vec.size() == vec.size());
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(this->vec[i]+vec[i]);
+        }
+
+        return MinVector(newVec);
+    }
+    
+
+    MinVector<T> add3(MinVector<T> minVector){
+        assert(this->vec.size() == minVector.vec.size());
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(this->vec[i]+minVector.vec[i]);
+        }
+
+        return MinVector(newVec);
+    }
+
+
+    vector<T> sub(vector<T> vec){
+        assert(this->vec.size() == vec.size());
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(this->vec[i]-vec[i]);
+        }
+
+        return newVec;
+    }
+
+    MinVector<T> sub2(vector<T> vec){
+        assert(this->vec.size() == vec.size());
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(this->vec[i]-vec[i]);
+        }
+
+        return MinVector(newVec);
+    }
+
+
+    MinVector<T> mul(T k){
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(this->vec[i]*k);
+        }
+
+        return MinVector(newVec);
+    }
+
+    MinVector<T> rmul(T k){
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(k*this->vec[i]);
+        }
+
+        return MinVector(newVec);
+    }
+
+    double dot(vector<T> vec){
+        assert(this->vec.size() == vec.size());
+        double ret = 0;
+        for(int i =0;i < this->vec.size();i++){
+            ret = ret + (vec[i]*this->vec[i]);
+        }
+        return ret;
+    }
+
+    MinVector<T> truediv(T k){
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back((1/k)*this->vec[i]);
+        }
+
+        return MinVector(newVec);
+    }
+
+    MinVector<T> pos(){
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(1*this->vec[i]);
+        }
+
+        return MinVector(newVec);
+    }
+    MinVector<T> neg(){
+
+        vector<T> newVec;
+        for(int i =0;i < this->vec.size();i++){
+            newVec.push_back(-1*this->vec[i]);
+        }
+
+        return MinVector(newVec);
+    }
+
+    double norm(){
+        auto ret=0;
+        for(int i = 0; i < this->vec.size();i++){
+            ret=ret+pow(this->vec[i],2);
+        }
+
+        return sqrt(ret);
+    }
+
+    double norm(vector<T> vec){
+        double ret=0;
+        for(int i = 0; i < vec.size();i++){
+            ret=ret+pow(vec[i],2);
+        }
+
+        return sqrt(ret);
+    }
+
+    double norm(MinVector<T> minVector){
+        double ret=0;
+        for(int i = 0; i < minVector.vec.size();i++){
+            ret=ret+pow(vec[i],2);
+        }
+
+        return sqrt(ret);
+    }
+
+
+
+    MinVector<T> nomalize(){
+        assert(this->norm()>EPSILON);
+        vector<T> newVec;
+        for(int i = 0; i < this->vec.size();i++){
+
+            newVec.push_back(1/this->norm()*this->vec[i]);
+        }
+
+        return MinVector(newVec);
+    }
+
+    MinVector<T> nomalize(vector<T> zero){
+        if(this->norm(zero)<EPSILON){
+            throw "Division by zero condition!";
+        }
+        vector<T> newVec;
+        for(int i = 0; i < this->vec.size();i++){
+
+            newVec.push_back(1/this->norm()*this->vec[i]);
+        }
+
+        return MinVector(newVec);
+    }
+
+    static vector<T> zero(int dim){
+
+        vector<T> newVec;
+        for(int i =0;i < dim;i++){
+            newVec.push_back(0);
+        }
+
+        return newVec;
+    }
+
+    MinVector<T> ones( int dim){
+        vector<T> newVec;
+        for(int i =0;i < dim;i++){
+            newVec.push_back(1);
+        }
+
+        return  MinVector(newVec);
+    }
+
+    MinVector<T> full(int dim,T num){
+        vector<T> newVec;
+        for(int i =0;i < dim;i++){
+            newVec.push_back(num);
+        }
+
+        return  MinVector(newVec);
+    }
+
+    MinVector<T> vecsub(vector<T> vec,int fisrt,int last){
+        assert(fisrt>0 && fisrt<vec.size());
+        assert(last>0 && last<vec.size());
+        vector<T> newVec;
+        for(int i = fisrt; i < last;i++){
+            newVec.push_back(vec[i]);
+        }
+
+        return  MinVector(newVec);
+    }
+
+};
