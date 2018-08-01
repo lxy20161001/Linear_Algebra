@@ -1,0 +1,262 @@
+#include "MinVector.h"
+#include <iostream>
+#include <cassert>
+#include <vector>
+#include <tuple>
+
+using namespace std;
+
+template<typename T>
+class MinMatrix{
+private:
+    vector<vector<T>> vec;
+
+public:
+    MinMatrix(vector<vector<T>> vec) : vec(vec) {
+
+    }
+
+    MinMatrix() {
+        vec = {};
+    }
+
+    T getitem(vector<int> pos) {
+        int r = pos[0];
+        int c = pos[1];
+        return vec[r][c];
+    }
+
+    MinMatrix<T> zero(unsigned r, unsigned c) {
+        vector<vector<T>> newVec(r);
+        for (int i = 0; i < r; i++) {
+            newVec[i] = vector<double>(c);
+        }
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                newVec[i][j] = 0.0;
+            }
+        }
+        return MinMatrix<T>(newVec);
+    }
+
+
+    MinVector<T> row_vector(int index) {
+        return MinVector<T>(vec[index]);
+    }
+
+    MinVector<T> col_vector(int index) {
+        vector<T> newVec;
+        for (int i = 0; i < vec.size(); i++) {
+            newVec.push_back(vec[i][index]);
+        }
+        return MinVector<T>(newVec);
+    }
+
+    int size() {
+        return vec.size();
+    }
+
+
+    int row_num() {
+        return this->shape().len();
+    }
+
+    int col_num() {
+        return this->vec[0].size();
+    }
+
+    MinVector<int> shape() {
+
+        int r = vec.size();
+        int c = col_vector(0).len();
+        return MinVector<int>({r, c});
+    }
+
+
+    MinMatrix<T> add(MinMatrix<T> matrix) {
+        assert(this->size() == matrix.size());
+        vector<vector<T>> newVec(matrix.size());
+        for (int i = 0; i < matrix.size(); i++) {
+            newVec[i] = vector<double>(matrix.row_vector(0).len());
+        }
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = 0; j < matrix.row_vector(0).len(); j++) {
+                newVec[i][j] = this->getitem({i,j}) + matrix.getitem({i,j});
+            }
+        }
+        return MinMatrix<T>(newVec);
+
+    }
+
+    MinMatrix<T> operator+(MinMatrix<T> &matrix) {
+        assert(this->size() == matrix.size());
+        vector<vector<T>> newVec(matrix.size());
+        for (int i = 0; i < matrix.size(); i++) {
+            newVec[i] = vector<double>(matrix.row_vector(0).len());
+        }
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = 0; j < matrix.row_vector(0).len(); j++) {
+                newVec[i][j] = this->getitem({i,j}) + matrix.getitem({i,j});
+            }
+        }
+        return MinMatrix<T>(newVec);
+    }
+
+    MinMatrix<T> sub(MinMatrix<T> matrix) {
+        assert(this->size() == matrix.size());
+        vector<vector<T>> newVec(matrix.size());
+        for (int i = 0; i < matrix.size(); i++) {
+            newVec[i] = vector<double>(matrix.row_vector(0).len());
+        }
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = 0; j < matrix.row_vector(0).len(); j++) {
+                newVec[i][j] = this->getitem({i,j}) - matrix.getitem({i,j});
+            }
+        }
+        return MinMatrix<T>(newVec);
+
+    }
+
+    MinMatrix<T> operator-(MinMatrix<T> &matrix) {
+        assert(this->size() == matrix.size());
+        vector<vector<T>> newVec(matrix.size());
+        for (int i = 0; i < matrix.size(); i++) {
+            newVec[i] = vector<double>(matrix.row_vector(0).len());
+        }
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = 0; j < matrix.row_vector(0).len(); j++) {
+                newVec[i][j] = this->getitem({i,j}) - matrix.getitem({i,j});
+            }
+        }
+        return MinMatrix<T>(newVec);
+    }
+
+    MinMatrix<T> mul(T k) {
+
+        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        for (int i = 0; i < this->size(); i++) {
+            newVec[i] = vector<double>(this->row_vector(0).len());
+        }
+        for (int i = 0; i < this->size(); i++) {
+            for (int j = 0; j < this->row_vector(0).len(); j++) {
+                newVec[i][j] = this->getitem({i,j}) * k;
+            }
+        }
+        return MinMatrix<T>(newVec);
+
+    }
+
+    MinMatrix<T> operator*(T k) {
+        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        for (int i = 0; i < this->size(); i++) {
+            newVec[i] = vector<double>(this->row_vector(0).len());
+        }
+        for (int i = 0; i < this->size(); i++) {
+            for (int j = 0; j < this->row_vector(0).len(); j++) {
+                newVec[i][j] = this->getitem({i,j}) * k;
+            }
+        }
+        return MinMatrix<T>(newVec);
+    }
+
+    MinMatrix<T> rmul(T k) {
+
+        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        for (int i = 0; i < this->size(); i++) {
+            newVec[i] = vector<double>(this->row_vector(0).len());
+        }
+        for (int i = 0; i < this->size(); i++) {
+            for (int j = 0; j < this->row_vector(0).len(); j++) {
+                newVec[i][j] = k * this->getitem({i,j});
+            }
+        }
+        return MinMatrix<T>(newVec);
+
+    }
+
+    friend MinMatrix<T> operator*(T k, MinMatrix<T> &r) {
+        vector<vector<T>> newVec(static_cast<unsigned int>(r.size()));
+        for (int i = 0; i < r.size(); i++) {
+            newVec[i] = vector<double>(r.row_vector(0).len());
+        }
+        for (int i = 0; i < r.size(); i++) {
+            for (int j = 0; j < r.row_vector(0).len(); j++) {
+                newVec[i][j] = r.getitem({i,j}) * k;
+            }
+        }
+        return MinMatrix<T>(newVec);
+    }
+
+    MinMatrix<T> trueDiv(T k) {
+
+        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        for (int i = 0; i < this->size(); i++) {
+            newVec[i] = vector<double>(this->row_vector(0).len());
+        }
+        for (int i = 0; i < this->size(); i++) {
+            for (int j = 0; j < this->row_vector(0).len(); j++) {
+                newVec[i][j] = 1 / k * this->getitem({i,j});
+            }
+        }
+        return MinMatrix<T>(newVec);
+
+    }
+
+    MinMatrix<T> operator/(T k) {
+        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        for (int i = 0; i < this->size(); i++) {
+            newVec[i] = vector<double>(this->row_vector(0).len());
+        }
+        for (int i = 0; i < this->size(); i++) {
+            for (int j = 0; j < this->row_vector(0).len(); j++) {
+                newVec[i][j] = 1 / k * this->getitem({i,j});
+            }
+        }
+        return MinMatrix<T>(newVec);
+    }
+
+    MinMatrix<T> pos() {
+
+        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        for (int i = 0; i < this->size(); i++) {
+            newVec[i] = vector<double>(this->row_vector(0).len());
+        }
+        for (int i = 0; i < this->size(); i++) {
+            for (int j = 0; j < this->row_vector(0).len(); j++) {
+                newVec[i][j] = 1 * this->getitem({i,j});
+            }
+        }
+        return MinMatrix<T>(newVec);
+
+    }
+
+    MinMatrix<T> neg() {
+
+        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        for (int i = 0; i < this->size(); i++) {
+            newVec[i] = vector<double>(this->row_vector(0).len());
+        }
+        for (int i = 0; i < this->size(); i++) {
+            for (int j = 0; j < this->row_vector(0).len(); j++) {
+                newVec[i][j] = -1 * this->getitem({i,j});
+            }
+        }
+        return MinMatrix<T>(newVec);
+
+    }
+
+    friend ostream &operator<<(ostream &out, MinMatrix<T> matrix) {
+
+        out << "(";
+        for (int i = 0; i < matrix.size(); i++) {
+            if (i != matrix.size() - 1) {
+                out << matrix.row_vector(i) << ',';
+            } else {
+                out << matrix.row_vector(i);
+            }
+        }
+
+        out << ")";
+        return out;
+    }
+};
