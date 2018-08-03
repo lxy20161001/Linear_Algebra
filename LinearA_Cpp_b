@@ -1,3 +1,10 @@
+//
+// Created by john on 2018-8-1.
+//
+
+#ifndef LINEARALGEBRA2_MINMATRIX_H
+#define LINEARALGEBRA2_MINMATRIX_H
+
 #include "MinVector.h"
 #include <iostream>
 #include <cassert>
@@ -6,13 +13,13 @@
 
 using namespace std;
 
-template<typename T>
+template<typename A>
 class MinMatrix{
 private:
-    vector<vector<T>> vec;
+    vector<vector<A>> vec;
 
 public:
-    MinMatrix(vector<vector<T>> vec) : vec(vec) {
+    MinMatrix(vector<vector<A>> vec) : vec(vec) {
 
     }
 
@@ -20,14 +27,14 @@ public:
         vec = {};
     }
 
-    T getitem(vector<int> pos) {
+    A getitem(vector<int> pos) {
         int r = pos[0];
         int c = pos[1];
         return vec[r][c];
     }
 
-    MinMatrix<T> zero(unsigned r, unsigned c) {
-        vector<vector<T>> newVec(r);
+    MinMatrix<A> zero(unsigned r, unsigned c) {
+        vector<vector<A>> newVec(r);
         for (int i = 0; i < r; i++) {
             newVec[i] = vector<double>(c);
         }
@@ -36,20 +43,20 @@ public:
                 newVec[i][j] = 0.0;
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
     }
 
 
-    MinVector<T> row_vector(int index) {
-        return MinVector<T>(vec[index]);
+    MinVector<A> row_vector(int index) {
+        return MinVector<A>(vec[index]);
     }
 
-    MinVector<T> col_vector(int index) {
-        vector<T> newVec;
+    MinVector<A> col_vector(int index) {
+        vector<A> newVec;
         for (int i = 0; i < vec.size(); i++) {
             newVec.push_back(vec[i][index]);
         }
-        return MinVector<T>(newVec);
+        return MinVector<A>(newVec);
     }
 
     int size() {
@@ -73,9 +80,9 @@ public:
     }
 
 
-    MinMatrix<T> add(MinMatrix<T> matrix) {
+    MinMatrix<A> add(MinMatrix<A> matrix) {
         assert(this->size() == matrix.size());
-        vector<vector<T>> newVec(matrix.size());
+        vector<vector<A>> newVec(matrix.size());
         for (int i = 0; i < matrix.size(); i++) {
             newVec[i] = vector<double>(matrix.row_vector(0).len());
         }
@@ -84,13 +91,13 @@ public:
                 newVec[i][j] = this->getitem({i,j}) + matrix.getitem({i,j});
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
 
     }
 
-    MinMatrix<T> operator+(MinMatrix<T> &matrix) {
+    MinMatrix<A> operator+(MinMatrix<A> &matrix) {
         assert(this->size() == matrix.size());
-        vector<vector<T>> newVec(matrix.size());
+        vector<vector<A>> newVec(matrix.size());
         for (int i = 0; i < matrix.size(); i++) {
             newVec[i] = vector<double>(matrix.row_vector(0).len());
         }
@@ -99,12 +106,13 @@ public:
                 newVec[i][j] = this->getitem({i,j}) + matrix.getitem({i,j});
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
     }
 
-    MinMatrix<T> sub(MinMatrix<T> matrix) {
+
+    MinMatrix<A> sub(MinMatrix<A> matrix) {
         assert(this->size() == matrix.size());
-        vector<vector<T>> newVec(matrix.size());
+        vector<vector<A>> newVec(matrix.size());
         for (int i = 0; i < matrix.size(); i++) {
             newVec[i] = vector<double>(matrix.row_vector(0).len());
         }
@@ -113,13 +121,13 @@ public:
                 newVec[i][j] = this->getitem({i,j}) - matrix.getitem({i,j});
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
 
     }
 
-    MinMatrix<T> operator-(MinMatrix<T> &matrix) {
+    MinMatrix<A> operator-(MinMatrix<A> &matrix) {
         assert(this->size() == matrix.size());
-        vector<vector<T>> newVec(matrix.size());
+        vector<vector<A>> newVec(matrix.size());
         for (int i = 0; i < matrix.size(); i++) {
             newVec[i] = vector<double>(matrix.row_vector(0).len());
         }
@@ -128,12 +136,12 @@ public:
                 newVec[i][j] = this->getitem({i,j}) - matrix.getitem({i,j});
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
     }
 
-    MinMatrix<T> mul(T k) {
+    MinMatrix<A> mul(A k) {
 
-        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        vector<vector<A>> newVec(static_cast<unsigned int>(this->size()));
         for (int i = 0; i < this->size(); i++) {
             newVec[i] = vector<double>(this->row_vector(0).len());
         }
@@ -142,12 +150,12 @@ public:
                 newVec[i][j] = this->getitem({i,j}) * k;
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
 
     }
 
-    MinMatrix<T> operator*(T k) {
-        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+    MinMatrix<A> operator*(A k) {
+        vector<vector<A>> newVec(static_cast<unsigned int>(this->size()));
         for (int i = 0; i < this->size(); i++) {
             newVec[i] = vector<double>(this->row_vector(0).len());
         }
@@ -156,12 +164,12 @@ public:
                 newVec[i][j] = this->getitem({i,j}) * k;
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
     }
 
-    MinMatrix<T> rmul(T k) {
+    MinMatrix<A> rmul(A k) {
 
-        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        vector<vector<A>> newVec(static_cast<unsigned int>(this->size()));
         for (int i = 0; i < this->size(); i++) {
             newVec[i] = vector<double>(this->row_vector(0).len());
         }
@@ -170,12 +178,12 @@ public:
                 newVec[i][j] = k * this->getitem({i,j});
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
 
     }
 
-    friend MinMatrix<T> operator*(T k, MinMatrix<T> &r) {
-        vector<vector<T>> newVec(static_cast<unsigned int>(r.size()));
+    friend MinMatrix<A> operator*(A k, MinMatrix<A> &r) {
+        vector<vector<A>> newVec(static_cast<unsigned int>(r.size()));
         for (int i = 0; i < r.size(); i++) {
             newVec[i] = vector<double>(r.row_vector(0).len());
         }
@@ -184,12 +192,12 @@ public:
                 newVec[i][j] = r.getitem({i,j}) * k;
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
     }
 
-    MinMatrix<T> trueDiv(T k) {
+    MinMatrix<A> trueDiv(A k) {
 
-        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        vector<vector<A>> newVec(static_cast<unsigned int>(this->size()));
         for (int i = 0; i < this->size(); i++) {
             newVec[i] = vector<double>(this->row_vector(0).len());
         }
@@ -198,12 +206,12 @@ public:
                 newVec[i][j] = 1 / k * this->getitem({i,j});
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
 
     }
 
-    MinMatrix<T> operator/(T k) {
-        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+    MinMatrix<A> operator/(A k) {
+        vector<vector<A>> newVec(static_cast<unsigned int>(this->size()));
         for (int i = 0; i < this->size(); i++) {
             newVec[i] = vector<double>(this->row_vector(0).len());
         }
@@ -212,12 +220,12 @@ public:
                 newVec[i][j] = 1 / k * this->getitem({i,j});
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
     }
 
-    MinMatrix<T> pos() {
+    MinMatrix<A> pos() {
 
-        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        vector<vector<A>> newVec(static_cast<unsigned int>(this->size()));
         for (int i = 0; i < this->size(); i++) {
             newVec[i] = vector<double>(this->row_vector(0).len());
         }
@@ -226,13 +234,13 @@ public:
                 newVec[i][j] = 1 * this->getitem({i,j});
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
 
     }
 
-    MinMatrix<T> neg() {
+    MinMatrix<A> neg() {
 
-        vector<vector<T>> newVec(static_cast<unsigned int>(this->size()));
+        vector<vector<A>> newVec(static_cast<unsigned int>(this->size()));
         for (int i = 0; i < this->size(); i++) {
             newVec[i] = vector<double>(this->row_vector(0).len());
         }
@@ -241,13 +249,13 @@ public:
                 newVec[i][j] = -1 * this->getitem({i,j});
             }
         }
-        return MinMatrix<T>(newVec);
+        return MinMatrix<A>(newVec);
 
     }
 
-    friend ostream &operator<<(ostream &out, MinMatrix<T> matrix) {
+    friend ostream &operator<<(ostream &out, MinMatrix<A> matrix) {
 
-        out << "(";
+        out << "Matrix : (";
         for (int i = 0; i < matrix.size(); i++) {
             if (i != matrix.size() - 1) {
                 out << matrix.row_vector(i) << ',';
@@ -259,4 +267,52 @@ public:
         out << ")";
         return out;
     }
+
+
+    MinVector<A> operator[](int k) {
+        assert(k<vec.size() && k>=0);
+
+        return MinVector<A>(this->row_vector(k));
+    }
+
+    MinMatrix<A> dot(MinMatrix<A> &a){
+            assert(col_num() == a.row_num());
+            vector<vector<A>> newVec;
+            for(int i = 0; i< col_num();i++){
+                newVec.push_back(vector<double>());
+            }
+            for(int i = 0; i < row_num();i++){
+                for(int j = 0; j < a.col_num();j++){
+                    newVec[i].push_back(row_vector(i).dot(a.col_vector(j)));
+                }
+            }
+            return MinMatrix(newVec);
+    }
+
+    MinVector<A> dot(MinVector<A> a){
+        assert(col_num() == a.len());
+        vector<double> vecTemp;
+        for(int i = 0; i < col_num();i++){
+            vecTemp.push_back(row_vector(i).dot(a));
+        }
+        return MinVector<A>(vecTemp);
+    }
+
+    MinMatrix<A> T(){
+
+        vector<vector<A>> newVec;
+        for(int i = 0; i< col_num();i++){
+            newVec.push_back(vector<double>());
+        }
+        for(int i = 0; i < this[0].size();i++){
+            for(int j = 0; j < col_num();j++){
+                newVec[i].push_back(col_vector(i)[j]);
+            }
+        }
+        return MinMatrix(newVec);
+    }
+
+
 };
+
+#endif //LINEARALGEBRA2_MINMATRIX_H
