@@ -1,0 +1,236 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+namespace ConsoleApplication1
+{
+    public class MinMartix<T> where T:IComparable
+    {
+        private List<List<T>> vec = new List<List<T>>();
+        private List<List<double>> vecTemp = new List<List<double>>();
+
+
+        public MinMartix(List<List<T>> vec)
+        {
+            this.vec = vec;
+            for (int i = 0; i < vec.Count; i++)
+            {
+                vecTemp.Add(new List<double>(vec[i].Count));
+                for (int j = 0; j < vec[i].Count; j++)
+                {
+                    vecTemp[i].Add(0);
+                }
+            }
+        }
+        
+        
+
+        public T getitem(List<int> pos)
+        {
+            int r = pos[0];
+            int c = pos[1];
+            return vec[r][c];
+        }
+
+        public MinMartix<double> zero(int r, int c)
+        {
+            List<List<double>> newVec = new List<List<double>>();
+            for (int i = 0; i < r; i++) {
+                newVec.Add(new List<double>());
+            }
+            for (int i = 0; i < r; i++) {
+                for (int j = 0; j < c; j++) {
+                    newVec[i][j] = 0;
+                }
+            }
+            return new MinMartix<double>(newVec);
+        }
+
+        public PlayLA<T> row_vector(int index)
+        {
+            List<double> d = new List<double>();
+                   
+            foreach (var i in vec[index])
+            {
+                d.Add(Convert.ToDouble(i));
+            }
+            
+            return new PlayLA<T>(d);
+            
+        }
+        
+        public PlayLA<T> col_vector(int index)
+        {
+            List<double> d = new List<double>();
+
+            for (int i = 0; i < vec.Count; i++)
+            {
+                d.Add(Convert.ToDouble(vec[i][index]));
+            }
+            
+            return new PlayLA<T>(d);
+            
+        }
+
+        public int size()
+        {
+            return vec.Count;
+        }
+
+        public int row_num()
+        {
+            return shape().LstSize();
+        }
+        
+        public int col_num()
+        {
+            return vec[0].Count;
+        }
+
+        public PlayLA<int> shape()
+        {
+            int r = vec.Count;
+            int c = col_vector(0).LstSize();
+            return new PlayLA<int>(new List<double>() {r, c});
+        }
+
+        public MinMartix<double> add(MinMartix<T> martix)
+        {
+            Debug.Assert(size() == martix.size());
+            for (int i = 0; i < vecTemp.Count; i++) {
+                for (int j = 0; j < vecTemp[i].Count; j++)
+                {
+                    var a = this.getitem(new List<int>() {i, j});
+                    var b = martix.getitem(new List<int>() {i, j});
+                    vecTemp[i][j] = Convert.ToDouble(a) +Convert.ToDouble(b);
+                    
+                }
+            }       
+
+            return new MinMartix<double>(vecTemp);
+        }
+        
+        
+        public MinMartix<double> sub(MinMartix<T> martix)
+        {
+            Debug.Assert(size() == martix.size());
+            for (int i = 0; i < vecTemp.Count; i++) {
+                for (int j = 0; j < vecTemp[i].Count; j++)
+                {
+                    var a = this.getitem(new List<int>() {i, j});
+                    var b = martix.getitem(new List<int>() {i, j});
+                    vecTemp[i][j] = Convert.ToDouble(a)  - Convert.ToDouble(b);
+                    
+                }
+            }       
+
+            return new MinMartix<double>(vecTemp);
+        }
+        
+        public MinMartix<double> mul(int k)
+        {
+        
+            for (int i = 0; i < vecTemp.Count; i++) {
+                for (int j = 0; j < vecTemp[i].Count; j++)
+                {
+                    var a = this.getitem(new List<int>() {i, j});
+                  
+                    vecTemp[i][j] = k * Convert.ToDouble(a);
+                    
+                }
+            }       
+
+            return new MinMartix<double>(vecTemp);
+        }
+        
+        
+        public MinMartix<double> rmul(double  k)
+        {
+            
+            for (int i = 0; i < vecTemp.Count; i++) {
+                for (int j = 0; j < vecTemp[i].Count; j++)
+                {
+                    var a = this.getitem(new List<int>() {i, j});
+
+                    vecTemp[i][j] = Convert.ToDouble(a) * k;
+
+                }
+            }       
+
+            return new MinMartix<double>(vecTemp);
+        }
+        
+        
+        public MinMartix<double> div(double k)
+        {
+           
+            for (int i = 0; i < vecTemp.Count; i++) {
+                for (int j = 0; j < vecTemp[i].Count; j++)
+                {
+                    var a = this.getitem(new List<int>() {i, j});
+
+                    vecTemp[i][j] = Convert.ToDouble(a) * (1 / k);
+
+                }
+            }       
+
+            return new MinMartix<double>(vecTemp);
+        }
+        
+        public MinMartix<double> pos()
+        {
+      
+            for (int i = 0; i < vecTemp.Count; i++) {
+                for (int j = 0; j < vecTemp[i].Count; j++)
+                {
+                    var a = this.getitem(new List<int>() {i, j});
+              
+                    vecTemp[i][j] = Convert.ToDouble(a) * 1;
+
+                }
+            }       
+
+            return new MinMartix<double>(vecTemp);
+        }
+        
+        public MinMartix<double> neg()
+        {
+     
+            for (int i = 0; i < vecTemp.Count; i++) {
+                for (int j = 0; j < vecTemp[i].Count; j++)
+                {
+                    var a = this.getitem(new List<int>() {i, j});
+
+                    vecTemp[i][j] = Convert.ToDouble(a) * (-1);
+
+                }
+            }       
+
+            return new MinMartix<double>(vecTemp);
+        }
+
+
+        public override string ToString()
+        {
+            string str = "(";
+            for (int i = 0; i < vec.Count; i++)
+            {
+                if (i != vec.Count - 1)
+                {
+                    str += row_vector(i).toString() + ",";
+                }
+                else
+                {
+                    str += row_vector(i).toString();
+                }
+            }
+
+            str += ")";
+
+            return str;
+        }
+
+
+       
+    }
+}
