@@ -1,19 +1,67 @@
 using System;
 using System.Collections.Generic;
 
-namespace ConsoleApplication1
+
+namespace LinerForCSharp
 {
-    internal class Program
+    class Program
     {
-        public static void Main(string[] args)
+
+        public static void Print(object t) => Console.WriteLine(t);
+
+        static void Main(string[] args)
         {
-            PlayLA vec = new PlayLA(new List<double>(){5,2});
-            PlayLA vec2 = new PlayLA(new List<double>(){3,1});
-            Console.WriteLine(vec.getItem(0));
-            Console.WriteLine(vec.toString());
-            Console.WriteLine(vec.add(vec2._value).toString());
-            Console.WriteLine(vec.mul(2).toString());
-            Console.WriteLine(vec2.toString());
+             var vec = new Vector(new List<double>() { 4,32,13});
+             var vec2 = new Vector(new List<double>() { 3,1 ,4});
+             var vec3 = new Vector(new List<double>() { 3, 1, 4 });
+            //向量
+            Print(vec + vec2 - vec3);
+            
+            var mat = new List<List<double>>() { };
+            mat.Add(new List<double>() { 3, 1, -2 });
+            mat.Add(new List<double>() { 5,-3,10 });
+            mat.Add(new List<double>() { 7, 4, 16 });
+            
+            var mat2 = new List<List<double>>() { };
+            mat2.Add(new List<double>() { 1, 2, 1 });
+            mat2.Add(new List<double>() { 1, 1, 2 });
+            mat2.Add(new List<double>() { 2, 1, 1 });
+            
+            //矩阵
+             var Mat = new Matrix(mat);
+             var Mat2 = new Matrix(mat2);
+             Print(Mat + Mat2);
+             Print(Mat.row_vector(0));
+             Print(Mat.col_vector(0));
+             Print(Mat.Getitem(0, 0));
+             Print(Mat);
+             Print(Mat.T());
+             Print(Mat.shape());
+             Print(Mat.dot(vec));
+            
+             //线性系统
+             var lin = new LinearSystem(Mat,vec);
+            lin.gauss_jordan_elimination();
+            lin.fancy_print();
+
+            var lin2 = new LinearSystem(Mat2, Matrix.identity(3));
+            Print(lin2.inv()); ;
+
+            //gram_schmidt_process
+            var basis1 = new List<List<double>>()
+              {
+                  new List<double>(){2,1},
+                  new List<double>(){1,1}
+            };
+             var res1 = new gram_schmidt_process(basis1);
+            
+             Print(res1.res_Matrix());
+            
+            //qr分解
+             var qr = res1.qr();
+             Print(qr.Q);
+             Print(qr.R);
+             Print(qr.Q.dot(qr.R));
         }
     }
 }
