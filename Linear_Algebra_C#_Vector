@@ -1,0 +1,224 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Diagnostics;
+
+class Vector
+{
+    public List<double> _values;
+    public Vector()
+    {
+        this._values = new List<double>() { };
+    }
+
+    public Vector(List<double> vec)
+    {
+        this._values = vec;
+    }
+
+    public static Vector zero(int dim)
+    {
+        Vector vec = new Vector();
+        
+        foreach(var i in Range(0,dim)){
+            vec.append(0);
+        }
+        return vec;
+    }
+
+    public int Length()
+    {
+        return this._values.Count;
+    }
+
+    public override string ToString()
+    {
+        StringBuilder a = new StringBuilder("");
+        a.Append("Vector: [ ");
+        foreach(var i in Range(0, this.Length())){
+            if (i < this.Length() - 1)
+            {
+                a.Append(this._values[i].ToString() + " ,");
+            }
+            else
+            {
+                a.Append(this._values[i].ToString());
+            }
+        }
+        a.Append(" ]\n");
+        return a.ToString() ;
+    }
+
+    public  System.Collections.Generic.IEnumerator<double> GetEnumerator()
+    {
+        foreach(var i in this._values)
+        {
+             yield return i;
+        }
+    }
+
+    public double Getitem(int index)
+    {
+        return this._values[index];
+    }
+
+    public static Vector operator +(Vector vec, double ele)
+    {
+        
+        Vector vec1 = new Vector();
+        foreach (var i in vec)
+        {
+            vec1.append(i + ele);
+        }
+        return vec1;
+    }
+
+    public static Vector operator +(Vector vec, Vector another)
+    {
+        Debug.Assert(vec.Length() == another.Length(), "Error in adding. Length of vectors must be same.");
+        Vector vec1 = new Vector();
+        foreach(var i in Range(0, vec.Length()))
+        {
+            vec1.append(vec.Getitem(i) + another.Getitem(i));
+        }
+        return vec1;
+    }
+    
+
+    public static Vector operator -(Vector vec, Vector another)
+    {
+        Debug.Assert(vec.Length() == another.Length(), "Error in adding. Length of vectors must be same.");
+        Vector vec1 = new Vector();
+        for (int i = 0; i < vec.Length(); i++)
+        {
+            vec1.append(vec.Getitem(i) - another.Getitem(i));
+        }
+        return vec1;
+    }
+
+    public static Vector operator -(Vector vec, double ele)
+    {
+        Vector vec1 = new Vector();
+        for (int i = 0; i < vec.Length(); i++)
+        {
+            vec1.append(vec.Getitem(i) - ele);
+        }
+        return vec1;
+    }
+
+    public static Vector operator /(Vector vec, double ele)
+    {
+        Vector vec1 = new Vector();
+        foreach (var i in vec)
+        {
+            vec1.append(i / ele);
+        }
+        return vec1;
+    }
+
+    public static Vector operator * (Vector vec , double ele)
+    {
+        Vector vec1 = new Vector();
+        foreach(var i in vec)
+        {
+            vec1.append(i * ele);
+        }
+        return vec1;
+    }
+
+    public static Vector operator *(double ele,Vector vec)
+    {
+        Vector vec1 = new Vector();
+        foreach (var i in vec)
+        {
+            vec1.append(i * ele);
+        }
+        return vec1;
+    }
+
+    public void append(double ele)
+    {
+        this._values.Add(ele);
+    }
+
+    public Vector pos()
+    {
+        return this * 1;
+    }
+
+    public Vector neg()
+    {
+        return this * -1;
+    }
+
+    private static List<List<double>> Zip(params Vector[] vec)
+    {
+        var temp = new List<List<double>>(vec[0].Length()) { };
+       
+        for(int i = 0; i < vec[0].Length();++i)
+         {
+            temp.Add(new List<double>() { });
+            for(int j = 0; j < vec.Length; ++j)
+            {
+                temp[i].Add(vec[j]._values[i]);
+            }  
+        }
+        return temp;
+    }
+
+    public double norm()
+    {
+        double sumRet = 0.0;
+        foreach(var e in this)
+        {
+            sumRet += (e*e);
+        }
+        return Math.Sqrt(sumRet);
+    }
+
+    public Vector normalize()
+    {
+        var EPSILON = 1e-8;
+        if (this.norm() < EPSILON)
+        {
+            Console.WriteLine("Normalize error! norm is zero.");
+            return new Vector();
+        }
+        return new Vector(this._values) / this.norm();
+    }
+
+    public double dot(Vector another)
+    {
+        var dotRet = 0.0;
+        foreach(var i in Range(0, another.Length()))
+        {
+            dotRet += (this.Getitem(i) * another.Getitem(i));
+        }
+        return dotRet;
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int n)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            yield return i;
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end)
+    {
+        for (int i = start; i < end; i++)
+        {
+            yield return i;
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end, int step)
+    {
+        for (int i = start; i < end; i = i + step)
+        {
+            yield return i;
+        }
+    }
+}
+
