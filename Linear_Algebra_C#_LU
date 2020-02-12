@@ -1,0 +1,85 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Diagnostics;
+
+class LU
+{
+    int n;
+    Matrix A;
+    Matrix L;
+    List<Matrix> MatList;
+    public LU(Matrix mat)
+    {
+        Debug.Assert(mat.row_num() != mat.col_num(), "matrix must be a square matrix");
+        n = mat.row_num();
+        A = mat;
+        L = Matrix.identity(n);
+        MatList = new List<Matrix>();
+    }
+
+    public void decomposition()
+    {
+        foreach (var i in Range(n))
+        {
+            if (is_zero(A._values[i][i]))
+            {
+                MatList.Add(new Matrix());
+                MatList.Add(new Matrix());
+                return;
+            }
+            else
+            {
+                foreach (var j in Range(i + 1, n))
+                {
+                    var p = A._values[j][i] / A._values[i][i];
+                    A._values[j] = (A.row_vector(j) - p * A.row_vector(i))._values;
+                    L._values[j][i] = p;
+                }
+            }
+        }
+        MatList.Add(L);
+        MatList.Add(A);
+    }
+
+    public Matrix _L()
+    {
+        return MatList[0];
+    }
+
+    public Matrix _U()
+    {
+        return MatList[1];
+    }
+
+    private bool is_zero(double x)
+    {
+        var EPSILON = 1e-8;
+        return Math.Abs(x) < EPSILON;
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int n)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            yield return i;
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end)
+    {
+        for (int i = start; i < end; i++)
+        {
+            yield return i;
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end, int step)
+    {
+        for (int i = start; i < end; i = i + step)
+        {
+            yield return i;
+        }
+    }
+}
+
