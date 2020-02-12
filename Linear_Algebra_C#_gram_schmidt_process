@@ -1,0 +1,81 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Diagnostics;
+
+struct QR
+{
+   public  Matrix Q, R;
+}
+class gram_schmidt_process
+ {
+    Matrix matrix;
+    List<List<double>> res;
+    int _rank;
+    public gram_schmidt_process(List<List<double>> basis)
+    {
+        matrix = new Matrix(basis);
+        _rank = new LinearSystem(matrix).rank();
+        Debug.Assert(_rank == basis.Count);
+
+         res = new List<List<double>>();
+        res.Add(basis[0]);
+        
+        for(int i = 1; i < basis.Count; ++i)
+        {
+            var p = new Vector(basis[i]);
+            foreach( var r in res)
+            {
+                var bVEC = new Vector(basis[i]);
+                var _r = new Vector(r);
+                p = p - bVEC.dot(_r) / _r.dot(_r)*_r;
+            }
+            res.Add(p._values);
+        }
+    }
+
+    public Matrix res_Matrix()
+    {
+        return new Matrix(res);
+    }
+
+    public QR qr()
+    {
+        var _q = new Matrix();
+        foreach(var v in this.res_Matrix())
+        {
+            _q.MatrixAppend(v / v.norm());
+        }
+        var _QR = new QR();
+        _QR.Q = _q.T();
+        _QR.R = _QR.Q.T().dot(this.res_Matrix());
+
+        return _QR;
+
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int n)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            yield return i;
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end)
+    {
+        for (int i = start; i < end; i++)
+        {
+            yield return i;
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end, int step)
+    {
+        for (int i = start; i < end; i = i + step)
+        {
+            yield return i;
+        }
+    }
+}
+
