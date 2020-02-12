@@ -1,0 +1,234 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+class LinearSystem
+{
+    private int _m, _n;
+    private Matrix Ab;
+    private Vector pivots;
+
+    public LinearSystem()
+    {
+    }
+
+    public LinearSystem(Matrix A)
+    {
+        this._m = A.row_num();
+        this._n = A.col_num();
+
+        Ab = new Matrix();
+        foreach (var i in Range(this._m))
+        {
+            var newList = A.row_vector(i)._values;
+            Ab.MatrixAppend(newList);
+        }
+
+        pivots = new Vector();
+    }
+    public LinearSystem(Matrix A, Vector b)
+    {
+        this._m = A.row_num();
+        this._n = A.col_num();
+
+        Ab = new Matrix();
+
+
+        foreach (var i in Range(this._m))
+        {
+            var newList = A.row_vector(i)._values;
+            newList.Add(b.Getitem(i));
+            Ab.MatrixAppend(newList);
+        }
+
+        pivots = new Vector();
+
+    }
+
+    public LinearSystem(Matrix A, Matrix B)
+    {
+        this._m = A.row_num();
+        this._n = A.col_num();
+
+        Ab = new Matrix();
+        foreach (var i in Range(this._m))
+        {
+            var newList = A.row_vector(i)._values;
+            newList.AddRange(B.row_vector(i)._values);
+            Ab.MatrixAppend(newList);
+        }
+        pivots = new Vector();
+    }
+
+    public Matrix newAb()
+    {
+        return this.Ab;
+    }
+
+    public int _max_row(int index_i, int index_j, int n)
+    {
+        var best = this.Ab._values[index_i][index_j];
+        var ret = index_i;
+
+        foreach (var i in Range(index_i, n))
+        {
+            if (this.Ab._values[i][index_j] > best)
+            {
+                best = this.Ab._values[i][index_j];
+                ret = i;
+            }
+        }
+        return ret;
+    }
+
+
+
+
+    public void _forward()
+    {
+        int i = 0;
+        int k = 0;
+
+        while (i < this._m && k < this._n)
+        {
+            var max_row = this._max_row(i, k, this._m);
+
+
+
+            if (is_zero(this.Ab._values[i][k]))
+            {
+                k += 1;
+            }
+
+            else
+            {
+                this.Ab._values[i] = (this.Ab.row_vector(i) / this.Ab.Getitem(i, k))._values;
+                foreach (var j in Range(i + 1, this._m))
+                {
+                    this.Ab._values[j] = (this.Ab.row_vector(j) - this.Ab.Getitem(j, k) * this.Ab.row_vector(i))._values;
+                }
+                this.pivots.append(k);
+                i += 1;
+            }
+
+
+        }
+    }
+
+    public void _backward()
+    {
+        var n = this.pivots.Length();
+
+        for (int i = n - 1; i > -1; --i)
+        {
+            int k = (int)this.pivots.Getitem(i);
+            for (int j = i - 1; j > -1; --j)
+            {
+                this.Ab._values[j] = (this.Ab.row_vector(j) - this.Ab.Getitem(j, k) * this.Ab.row_vector(i))._values;
+            }
+        }
+    }
+
+    public bool gauss_jordan_elimination()
+    {
+        this._forward();
+        this._backward();
+
+        foreach (var i in Range(this.pivots.Length(), this._m))
+        {
+            if (is_zero(this.Ab.Getitem(i, this._n - 1)) == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void fancy_print()
+    {
+        foreach (var i in this.Ab)
+        {
+            foreach (var j in Range(0, i.Length()))
+            {
+                Console.Write(i.Getitem(j).ToString() + " ");
+                if (j == i.Length() - 2)
+                {
+                    Console.Write("| ");
+                }
+            }
+            Console.WriteLine();
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int n)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            yield return i;
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end)
+    {
+        for (int i = start; i < end; i++)
+        {
+            yield return i;
+        }
+    }
+
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end, int step)
+    {
+        for (int i = start; i < end; i = i + step)
+        {
+            yield return i;
+        }
+    }
+
+    private bool is_zero(double x)
+    {
+        var EPSILON = 1e-8;
+        return Math.Abs(x) < EPSILON;
+    }
+
+    public Matrix inv()
+    {
+        if (this._m != this._n)
+        {
+            return new Matrix();
+        }
+
+        int n = this._m;
+        if (this.gauss_jordan_elimination() == false)
+        {
+            return new Matrix();
+        }
+
+        List<List<double>> invA = new List<List<double>>();
+        foreach (var row in this.Ab)
+        {
+            var t = new List<double>();
+            foreach (var i in Range(n, 2 * n))
+            {
+                t.Add(row._values[i]);
+            }
+            invA.Add(t);
+
+        }
+        return new Matrix(invA);
+    }
+
+    public int rank()
+    {
+        this.gauss_jordan_elimination();
+        var zero = Vector.zero(this._n);
+        int sum = 0;
+        foreach (var row in this.Ab)
+        {
+            if (row._values != zero._values)
+            {
+                sum++;
+            }
+        }
+        return sum;
+    }
+}
