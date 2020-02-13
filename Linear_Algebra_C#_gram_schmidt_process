@@ -5,10 +5,21 @@ using System.Diagnostics;
 
 struct QR
 {
-   public  Matrix Q, R;
+    public Matrix Q, R;
+    public QR(Matrix q, Matrix r)
+    {
+        Q = q;
+        R = r;
+    }
+
+    public void Deconstruct(out Matrix q, out Matrix r)
+    {
+        q = Q;
+        r = R;
+    }
 }
 class gram_schmidt_process
- {
+{
     Matrix matrix;
     List<List<double>> res;
     int _rank;
@@ -18,37 +29,36 @@ class gram_schmidt_process
         _rank = new LinearSystem(matrix).rank();
         Debug.Assert(_rank == basis.Count);
 
-         res = new List<List<double>>();
+        res = new List<List<double>>();
         res.Add(basis[0]);
-        
-        for(int i = 1; i < basis.Count; ++i)
+
+        for (int i = 1; i < basis.Count; ++i)
         {
             var p = new Vector(basis[i]);
-            foreach( var r in res)
+            foreach (var r in res)
             {
                 var bVEC = new Vector(basis[i]);
                 var _r = new Vector(r);
-                p = p - bVEC.dot(_r) / _r.dot(_r)*_r;
+                p = p - bVEC.dot(_r) / _r.dot(_r) * _r;
             }
             res.Add(p._values);
         }
     }
 
-    public Matrix res_Matrix()
+    public Matrix res_Matrix
     {
-        return new Matrix(res);
+        get { return new Matrix(res); }
     }
 
     public QR qr()
     {
         var _q = new Matrix();
-        foreach(var v in this.res_Matrix())
+        foreach (var v in this.res_Matrix)
         {
             _q.MatrixAppend(v / v.norm());
         }
-        var _QR = new QR();
-        _QR.Q = _q.T();
-        _QR.R = _QR.Q.T().dot(this.res_Matrix());
+      
+        var _QR = new QR(_q.T(), _q.dot(this.res_Matrix));
 
         return _QR;
 
