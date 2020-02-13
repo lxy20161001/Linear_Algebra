@@ -12,15 +12,20 @@ class Matrix
     }
     public Matrix(List<List<double>> list2d)
     {
-        this._values = list2d;
+        // this._values = list2d;
+        this._values = new List<List<double>>();
+        foreach (var i in list2d)
+        {
+            this._values.Add(i);
+        }
     }
     public static Matrix identity(int n)
     {
         var list = new List<List<double>>();
-           for(int i = 0; i < n; ++i)
+        for (int i = 0; i < n; ++i)
         {
             list.Add(new List<double>());
-            for(int j = 0; j < n; ++j)
+            for (int j = 0; j < n; ++j)
             {
                 list[i].Add(0);
                 if (i == j)
@@ -40,15 +45,15 @@ class Matrix
         }
     }
 
-    private static  System.Collections.Generic.IEnumerable<int> Range(int n)
+    private static System.Collections.Generic.IEnumerable<int> Range(int n)
     {
-        for(int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
         {
             yield return i;
         }
     }
 
-    private static System.Collections.Generic.IEnumerable<int> Range(int start,int end)
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end)
     {
         for (int i = start; i < end; i++)
         {
@@ -56,21 +61,21 @@ class Matrix
         }
     }
 
-    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end,int step)
+    private static System.Collections.Generic.IEnumerable<int> Range(int start, int end, int step)
     {
-        for (int i = start; i < end; i=i+step)
+        for (int i = start; i < end; i = i + step)
         {
             yield return i;
         }
     }
 
-    public static Matrix zero(int r,int c)
+    public static Matrix zero(int r, int c)
     {
-        var zeroMat = new List<List<double>>() ;
-        for(int i = 0; i < r; ++i)
+        var zeroMat = new List<List<double>>();
+        for (int i = 0; i < r; ++i)
         {
-            zeroMat.Add(new List<double>(c) );
-            for(int j = 0; j < c; j++)
+            zeroMat.Add(new List<double>(c));
+            for (int j = 0; j < c; j++)
             {
                 zeroMat[i].Add(0);
             }
@@ -78,10 +83,12 @@ class Matrix
         return new Matrix(zeroMat);
     }
 
-    public  int row_num()
+    public int row_num()
     {
         return this._values.Count;
     }
+
+
 
     public int col_num()
     {
@@ -93,9 +100,16 @@ class Matrix
         return this.row_num() * this.col_num();
     }
 
+
+
     public Vector shape()
     {
         return new Vector(new List<double>() { this.row_num(), this.col_num() });
+    }
+
+    public Vector _shape
+    {
+        get { return this.shape(); }
     }
 
     public override string ToString()
@@ -107,16 +121,21 @@ class Matrix
         }
         a.Append("} \n");
         return a.ToString();
-    } 
+    }
 
     public Matrix T()
     {
         var TMat = new Matrix();
-        foreach(var  i in Range(this.col_num()))
+        foreach (var i in Range(this.col_num()))
         {
             TMat.MatrixAppend(this.col_vector(i));
         }
         return TMat;
+    }
+
+    public Matrix _T
+    {
+        get { return this.T(); }
     }
 
     public Vector row_vector(int index)
@@ -127,14 +146,40 @@ class Matrix
     public Vector col_vector(int index)
     {
         List<double> temp = new List<double>();
-        foreach(var i in this._values)
+        foreach (var i in this._values)
         {
             temp.Add(i[index]);
         }
         return new Vector(temp);
     }
 
-    public double Getitem(int r,int c)
+    public Vector this[int index]
+    {
+        get { return this.row_vector(index); }
+        set { this._values[index] = value._values; }
+    }
+    public Vector this[string str, int index]
+    {
+        get
+        {
+            if (str == "row")
+            {
+                return this.row_vector(index);
+            }
+            else
+            {
+                return this.col_vector(index);
+            }
+        }
+    }
+
+    public double this[int row, int col]
+    {
+        get { return this._values[row][col]; }
+        set { this._values[row][col] = value; }
+    }
+
+    public double Getitem(int r, int c)
     {
         return this._values[r][c];
     }
@@ -144,16 +189,16 @@ class Matrix
         this._values.Add(vec._values);
     }
 
-    public void MatrixAppend(List<double>vec)
+    public void MatrixAppend(List<double> vec)
     {
         this._values.Add(vec);
     }
 
-    public  static Matrix operator + (Matrix mat1,Matrix mat2)
+    public static Matrix operator +(Matrix mat1, Matrix mat2)
     {
         int number = mat1._values.Count;
         var temp = new Matrix();
-        foreach(var index in Range(0, number))
+        foreach (var index in Range(0, number))
         {
             temp.MatrixAppend(mat1.row_vector(index) + mat2.row_vector(index));
         }
@@ -171,7 +216,7 @@ class Matrix
         return temp;
     }
 
-    public static Matrix operator * (Matrix mat1, double ele)
+    public static Matrix operator *(Matrix mat1, double ele)
     {
         int number = mat1._values.Count;
         var temp = new Matrix();
@@ -182,7 +227,7 @@ class Matrix
         return temp;
     }
 
-    public static Matrix operator * (double ele, Matrix mat1 )
+    public static Matrix operator *(double ele, Matrix mat1)
     {
         int number = mat1._values.Count;
         var temp = new Matrix();
@@ -199,7 +244,7 @@ class Matrix
         var temp = new Matrix();
         foreach (var index in Range(0, number))
         {
-            temp.MatrixAppend(mat1.row_vector(index) * (1/ele));
+            temp.MatrixAppend(mat1.row_vector(index) * (1 / ele));
         }
         return temp;
     }
@@ -217,7 +262,7 @@ class Matrix
     public Vector dot(Vector another)
     {
         List<double> newVec = new List<double>();
-        foreach(var i in Range(0, this.row_num()))
+        foreach (var i in Range(0, this.row_num()))
         {
             newVec.Add(this.row_vector(i).dot(another));
         }
@@ -227,12 +272,12 @@ class Matrix
     public Matrix dot(Matrix another)
     {
         Matrix newMat = new Matrix();
-        foreach(var i in Range(0, this.row_num()))
+        foreach (var i in Range(0, this.row_num()))
         {
             var list = new List<double>();
             foreach (var j in Range(0, another.col_num()))
             {
-                list.Add(this.row_vector(i).dot(another.col_vector(j)));   
+                list.Add(this.row_vector(i).dot(another.col_vector(j)));
             }
             newMat.MatrixAppend(list);
         }
