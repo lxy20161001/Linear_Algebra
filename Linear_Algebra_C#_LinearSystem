@@ -198,6 +198,7 @@ class LinearSystem
         }
 
         int n = this._m;
+        //var ls = new LinearSystem(A, Matrix.identity(n));
         if (this.gauss_jordan_elimination() == false)
         {
             return new Matrix();
