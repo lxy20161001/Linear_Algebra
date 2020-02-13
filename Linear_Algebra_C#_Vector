@@ -19,8 +19,9 @@ class Vector
     public static Vector zero(int dim)
     {
         Vector vec = new Vector();
-        
-        foreach(var i in Range(0,dim)){
+
+        foreach (var i in Range(0, dim))
+        {
             vec.append(0);
         }
         return vec;
@@ -31,11 +32,20 @@ class Vector
         return this._values.Count;
     }
 
+    public double this[int index]
+    {
+        get { return this._values[index]; }
+        set { this._values[index] = value; }
+    }
+
+
+
     public override string ToString()
     {
         StringBuilder a = new StringBuilder("");
         a.Append("Vector: [ ");
-        foreach(var i in Range(0, this.Length())){
+        foreach (var i in Range(0, this.Length()))
+        {
             if (i < this.Length() - 1)
             {
                 a.Append(this._values[i].ToString() + " ,");
@@ -46,14 +56,14 @@ class Vector
             }
         }
         a.Append(" ]\n");
-        return a.ToString() ;
+        return a.ToString();
     }
 
-    public  System.Collections.Generic.IEnumerator<double> GetEnumerator()
+    public System.Collections.Generic.IEnumerator<double> GetEnumerator()
     {
-        foreach(var i in this._values)
+        foreach (var i in this._values)
         {
-             yield return i;
+            yield return i;
         }
     }
 
@@ -62,9 +72,18 @@ class Vector
         return this._values[index];
     }
 
+    public double Getitem(int index, double ele) => _values[index] = ele;
+    private ref List<double> ChangeVec() => ref _values;
+    public Vector ChangeVec(List<double> vec)
+    {
+        ref List<double> newVec = ref this.ChangeVec();
+        newVec = vec;
+        return new Vector(newVec);
+    }
+
     public static Vector operator +(Vector vec, double ele)
     {
-        
+
         Vector vec1 = new Vector();
         foreach (var i in vec)
         {
@@ -77,13 +96,13 @@ class Vector
     {
         Debug.Assert(vec.Length() == another.Length(), "Error in adding. Length of vectors must be same.");
         Vector vec1 = new Vector();
-        foreach(var i in Range(0, vec.Length()))
+        foreach (var i in Range(0, vec.Length()))
         {
             vec1.append(vec.Getitem(i) + another.Getitem(i));
         }
         return vec1;
     }
-    
+
 
     public static Vector operator -(Vector vec, Vector another)
     {
@@ -116,17 +135,17 @@ class Vector
         return vec1;
     }
 
-    public static Vector operator * (Vector vec , double ele)
+    public static Vector operator *(Vector vec, double ele)
     {
         Vector vec1 = new Vector();
-        foreach(var i in vec)
+        foreach (var i in vec)
         {
             vec1.append(i * ele);
         }
         return vec1;
     }
 
-    public static Vector operator *(double ele,Vector vec)
+    public static Vector operator *(double ele, Vector vec)
     {
         Vector vec1 = new Vector();
         foreach (var i in vec)
@@ -154,14 +173,14 @@ class Vector
     private static List<List<double>> Zip(params Vector[] vec)
     {
         var temp = new List<List<double>>(vec[0].Length()) { };
-       
-        for(int i = 0; i < vec[0].Length();++i)
-         {
+
+        for (int i = 0; i < vec[0].Length(); ++i)
+        {
             temp.Add(new List<double>() { });
-            for(int j = 0; j < vec.Length; ++j)
+            for (int j = 0; j < vec.Length; ++j)
             {
                 temp[i].Add(vec[j]._values[i]);
-            }  
+            }
         }
         return temp;
     }
@@ -169,9 +188,9 @@ class Vector
     public double norm()
     {
         double sumRet = 0.0;
-        foreach(var e in this)
+        foreach (var e in this)
         {
-            sumRet += (e*e);
+            sumRet += (e * e);
         }
         return Math.Sqrt(sumRet);
     }
@@ -190,7 +209,7 @@ class Vector
     public double dot(Vector another)
     {
         var dotRet = 0.0;
-        foreach(var i in Range(0, another.Length()))
+        foreach (var i in Range(0, another.Length()))
         {
             dotRet += (this.Getitem(i) * another.Getitem(i));
         }
