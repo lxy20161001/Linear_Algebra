@@ -3,29 +3,50 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 
+
+
+struct _LU
+{
+    public Matrix L, U;
+    public _LU(Matrix _L,Matrix _U)
+    {
+        L = _L;
+        U = _U;
+    }
+
+    public void Deconstruct(out Matrix _L, out Matrix _U)
+    {
+        _L = L;
+        _U = U;
+    }
+}
 class LU
 {
     int n;
     Matrix A;
     Matrix L;
-    List<Matrix> MatList;
+   // List<Matrix> MatList;
+    _LU lu;
     public LU(Matrix mat)
     {
-        Debug.Assert(mat.row_num() != mat.col_num(), "matrix must be a square matrix");
+        Debug.Assert(mat.row_num() == mat.col_num(), "matrix must be a square matrix");
         n = mat.row_num();
         A = mat;
         L = Matrix.identity(n);
-        MatList = new List<Matrix>();
+        lu = new _LU();
+       // MatList = new List<Matrix>();
     }
 
     public void decomposition()
     {
+        
         foreach (var i in Range(n))
         {
             if (is_zero(A._values[i][i]))
             {
-                MatList.Add(new Matrix());
-                MatList.Add(new Matrix());
+               // MatList.Add(new Matrix());
+                lu.L = lu.U = new Matrix();
+               // MatList.Add(new Matrix());
                 return;
             }
             else
@@ -38,18 +59,23 @@ class LU
                 }
             }
         }
-        MatList.Add(L);
-        MatList.Add(A);
+        lu.L = L;
+        lu.U = A;
     }
 
     public Matrix _L()
     {
-        return MatList[0];
+        return lu.L;//MatList[0];
     }
 
     public Matrix _U()
     {
-        return MatList[1];
+        return lu.U;//MatList[1];
+    }
+
+    public _LU DStruct()
+    {
+        return this.lu;
     }
 
     private bool is_zero(double x)
