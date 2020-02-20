@@ -1,0 +1,227 @@
+#pragma once
+#include "Vector.h"
+
+
+
+class Matrix
+{
+public:
+	vector<vector<double>> _values;
+public:
+
+	Matrix() {};
+	Matrix(vector<vector<double>> list2d) :_values(list2d) {
+	}
+	Matrix(std::initializer_list<initializer_list<double>> list2d) {
+		for (auto& i : list2d) {
+			_values.push_back(i);
+		}
+	}
+	Matrix(Matrix& matrix) {
+		this->_values = matrix._values;
+	}
+
+	Matrix(Matrix&& matrix) noexcept {
+		this->_values.clear();
+		this->_values = matrix._values;
+		matrix._values.clear();
+	}
+
+	Matrix& operator = (const Matrix& matrix) {
+		this->_values = matrix._values;
+		return *this;
+	}
+
+	Matrix& operator = (Matrix&& matrix) noexcept {
+		if (this->_values != matrix._values) {
+			this->_values.clear();
+			this->_values = matrix._values;
+			matrix._values.clear();
+		}
+		return *this;
+	}
+
+	static Matrix zero(int r, int c) {
+		vector<vector<double>> tempvec;
+		for (int i = 0; i != r; ++i) {
+			tempvec.push_back(vector<double>(c));
+		}
+		return Matrix(tempvec);
+	}
+
+	static Matrix identiry(int n) {
+		vector<vector<double>> tempvec(n);
+		for (int i = 0; i < n; ++i) {
+			tempvec[i] = vector<double>(n);
+			tempvec[i][i] = 1;
+		}
+		return Matrix(tempvec);
+	}
+
+	Matrix T() {
+		Matrix tempMat;
+		for (auto i = 0; i < col_num(); ++i) {
+			tempMat.append(this->col_vector(i));
+		}
+		return tempMat;
+	}
+
+	int size() {
+		return this->_values.size();
+	}
+
+	int row_num() {
+		return this->size();
+	}
+
+	int col_num() {
+		return this->_values[0].size();
+	}
+
+	double  getitem(int r, int c) {
+		return this->_values[r][c];
+	}
+
+
+
+	Vector shape() {
+		int row = this->row_num();
+		int col = this->col_num();
+		vector<double> _shape = { row * 1.0,col * 1.0 };
+		return Vector(_shape);
+	}
+
+	Vector operator[](int index) {
+		return Vector(this->_values[index]);
+	}
+
+	vector<vector<double>>& _matrix() {
+		return this->_values;
+	}
+
+	friend ostream& operator<<(ostream& out, Matrix matrix) {
+		cout << "Matrix:{\n";
+		for (auto i = 0; i != matrix.size(); ++i) {
+			if (i <= matrix.size() - 2) {
+				cout << matrix[i] << endl;
+			}
+			else {
+				cout << matrix[i];
+			}
+		}
+		cout << " } " << endl;
+		return out;
+	}
+
+	void append(Vector&& vec) {
+		this->_values.push_back(vec.underlying());
+	}
+
+	void append(Vector& vec) {
+		this->_values.push_back(vec.underlying());
+	}
+
+	Vector row_vector(int index) {
+		return Vector(this->_values[index]);
+	}
+
+	Vector col_vector(int index) {
+		vector<double> col;
+		for (auto& i : this->_values) {
+			col.push_back(i[index]);
+		}
+		return Vector(col);
+	}
+
+	Vector dot(Vector anthor) {
+		assert(this->col_num() == anthor.size());
+		vector<double> tempvec;
+		for (int i = 0; i < row_num(); ++i) {
+			tempvec.push_back(this->row_vector(i).dot(anthor));
+		}
+		return Vector(tempvec);
+	}
+
+	Matrix dot(Matrix anthor) {
+		assert(this->col_num() == anthor.row_num());
+		vector<vector<double>> tempMat;
+		for (int i = 0; i < row_num(); ++i) {
+			vector<double> tempvec;
+			for (int j = 0; j < col_num(); ++j) {
+				tempvec.push_back(this->row_vector(i).dot(anthor.col_vector(j)));
+			}
+			tempMat.push_back(tempvec);
+		}
+		return Matrix(tempMat);
+	}
+
+	Matrix operator+(Matrix anthor) {
+		assert(this->shape() == anthor.shape());
+		Matrix tempMat;
+		for (auto i = 0; i != anthor.row_num(); ++i) {
+			tempMat.append(this->row_vector(i) + anthor.row_vector(i));
+		}
+		return tempMat;
+	}
+
+	Matrix operator+() {
+		Matrix tempMat;
+		for (auto i = 0; i != this->row_num(); ++i) {
+			tempMat.append(this->row_vector(i) * 1);
+		}
+		return tempMat;
+	}
+
+	Matrix operator-(Matrix anthor) {
+		assert(this->shape() == anthor.shape());
+		Matrix tempMat;
+		for (auto i = 0; i != anthor.row_num(); ++i) {
+			tempMat.append(this->row_vector(i) - anthor.row_vector(i));
+		}
+		return tempMat;
+	}
+
+	Matrix operator-() {
+		Matrix tempMat;
+		for (auto i = 0; i != this->row_num(); ++i) {
+			tempMat.append(this->row_vector(i) * -1);
+		}
+		return tempMat;
+	}
+
+	Matrix operator*(double ele) {
+		Matrix tempMat;
+		for (auto i = 0; i != this->row_num(); ++i) {
+			tempMat.append(this->row_vector(i) * ele);
+		}
+		return tempMat;
+	}
+
+	friend Matrix operator*(double ele, Matrix matrix) {
+		Matrix tempMat;
+		for (auto i = 0; i != matrix.row_num(); ++i) {
+			tempMat.append(matrix.row_vector(i) * ele);
+		}
+		return tempMat;
+	}
+
+	Matrix operator/(double ele) {
+		Matrix tempMat;
+		for (auto i = 0; i != this->row_num(); ++i) {
+			tempMat.append(this->row_vector(i) / ele);
+		}
+		return tempMat;
+	}
+
+
+	vector<double>* begin() {
+
+		return &this->_values[0];
+	}
+
+	vector<double>* end() {
+		return &this->_values[0] + this->_values.size();
+	}
+
+};
+
