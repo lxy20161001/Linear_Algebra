@@ -1,0 +1,61 @@
+#pragma once
+#include "LU.h"
+
+struct  QR
+{
+public:
+	Matrix Q, R;
+
+	QR(Matrix q, Matrix r)
+	{
+		Q = q;
+		R = r;
+	}
+};
+class gram_schmidt_process
+{
+	Matrix matrix;
+	vector<vector<double>> res;
+	int _rank;
+
+public:
+	gram_schmidt_process(vector<vector<double>> basis)
+	{
+		matrix = Matrix(basis);
+		_rank = LinearSystem(matrix).rank();
+		assert(_rank == basis.size());
+
+		res = vector<vector<double>>();
+		res.push_back(basis[0]);
+
+		for (int i = 1; i != basis.size(); ++i)
+		{
+			auto p = Vector(basis[i]);
+			for (auto& r : res)
+			{
+				auto bVEC = Vector(basis[i]);
+				auto _r = Vector(r);
+				p = p - bVEC.dot(_r) / _r.dot(_r) * _r;
+			}
+			res.push_back(p.vec);
+		}
+	}
+
+	Matrix res_Matrix()
+	{
+		return Matrix(res);
+	}
+
+	QR qr()
+	{
+		auto _q = Matrix();
+		for (auto& _v : this->res_Matrix())
+		{
+			auto v = Vector(_v);
+			_q.append(v / v.norm());
+		}
+		auto _QR = QR(_q.T(), _q.dot(this->res_Matrix()));
+		return _QR;
+	}
+};
+
