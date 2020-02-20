@@ -1,0 +1,60 @@
+#include <iostream>
+#include "gram_schmidt_process.h"
+
+
+
+
+int main()
+{
+	//Vector
+	Vector vec = { 4, 32, 13 };
+	Vector vec2 = { 3, 1, 4 };
+
+
+	cout << vec << endl;
+	cout << vec + vec2 << endl;
+
+	//Matrix
+	Matrix Mat = { { 3, 1, -2 } ,{ 5, -3, 10 } , { 7, 4, 16 } };
+	Matrix Mat2 = { { 1, 2, 1 } ,{ 1, 1, 2 }, { 2, 1, 1 } };
+
+	cout << Mat << endl;
+	cout << Mat2 << endl;
+
+	cout << Mat + Mat2 << endl;
+	cout << Mat.row_vector(0) << endl;
+	cout << Mat[0][0] << endl;
+	cout << Mat.T() << endl;
+	cout << Mat.dot(Mat2) << endl;
+
+	//LU
+
+	auto luMat = LU(Mat);
+	luMat.decomposition();
+	auto L = luMat._L();
+	auto U = luMat._U();
+	cout << L << endl;
+	cout << U << endl;
+
+	//LinearSystem
+	auto lin = LinearSystem(Mat, vec);
+	lin.gauss_jordan_elimination();
+	lin.fancy_print();
+	auto lin2 = LinearSystem(Mat2, Matrix().identiry(3));
+	cout << lin2.inv() << endl;
+
+	//gram_schmidt_process
+	vector<vector<double>> basis1 =
+	{
+		{ 2, 1 }, { 1, 1 }
+	};
+	auto res1 = gram_schmidt_process(basis1);
+	cout << res1.res_Matrix() << endl;
+
+	auto q = res1.qr().Q;
+	auto r = res1.qr().R;
+	cout << q << endl;
+	cout << r << endl;
+	cout << q.dot(r) << endl;
+
+}
