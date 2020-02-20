@@ -1,0 +1,51 @@
+#pragma once
+#include "LinearSystem.h"
+
+struct _LU
+{
+public:
+	Matrix L, U;
+};
+class LU
+{
+	int n;
+	Matrix A, L;
+	_LU lu;
+
+public:
+	LU(Matrix mat) {
+		assert(mat.row_num() == mat.col_num());
+		n = mat.row_num();
+		A = mat;
+		L = Matrix().identiry(n);
+	}
+
+	void decomposition() {
+		for (int i = 0; i < n; ++i) {
+			if (is_zero(A._values[i][i])) {
+				lu.L = lu.L = Matrix();
+				return;
+			}
+			else {
+				for (int j = i + 1; j < n; ++j) {
+					auto p = A._values[j][i] / A._values[i][i];
+					A._values[j] = (A.row_vector(j) - p * A.row_vector(i)).underlying();
+					L._values[j][i] = p;
+				}
+			}
+		}
+		lu.L = L;
+		lu.U = A;
+	}
+
+	Matrix _L()
+	{
+		return lu.L;//MatList[0];
+	}
+
+	Matrix _U()
+	{
+		return lu.U;//MatList[1];
+	}
+};
+
