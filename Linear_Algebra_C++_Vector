@@ -1,0 +1,221 @@
+#pragma once
+
+#include <iostream>
+#include <vector>
+#include <initializer_list>
+#include <cassert>
+#include <cmath>
+
+using namespace std;
+
+class Vector
+{
+public:
+	vector<double> vec;
+public:
+	Vector(vector<double> _vec) :vec(_vec) {}
+	Vector(vector<double>&& _vec) :vec(_vec) {}
+	Vector(initializer_list<double> list) :vec(list) {}
+	Vector() {}
+	Vector(Vector& _vec) {
+		vec = _vec.vec;
+	};
+	Vector(Vector&& _vec) noexcept {
+		vec.clear();
+		vec = _vec.vec;
+		_vec.vec.clear();
+	}
+
+	static Vector zero(int dim) {
+		std::vector<double> tempvec;
+		for (auto i = 0; i != dim; ++i) {
+			tempvec.push_back(0);
+		}
+		return Vector(tempvec);
+	}
+
+	int size() {
+		return this->vec.size();
+	}
+
+	void append(double ele) {
+		this->vec.push_back(ele);
+	}
+
+	void append(std::vector<double> vec) {
+		for (auto i = 0; i != vec.size(); ++i) {
+			this->vec.push_back(vec[i]);
+		}
+	}
+
+	void append(Vector vec) {
+		for (auto i = 0; i != vec.size(); ++i) {
+			this->vec.push_back(vec[i]);
+		}
+	}
+	void append(std::initializer_list<double> list) {
+		for (auto i = list.begin(); i != list.end(); ++i) {
+			this->vec.push_back(*i);
+		}
+	}
+
+	Vector& operator = (const Vector& _vec) {
+		this->vec = _vec.vec;
+		return *this;
+	}
+
+	Vector& operator = (Vector&& _vec) noexcept {
+		if (this->vec != _vec.vec) {
+			this->vec.clear();
+			this->vec = _vec.vec;
+			_vec.vec.clear();
+		}
+		return *this;
+	}
+
+	vector<double>& underlying() {
+		return this->vec;
+	}
+
+	double* begin() {
+		return &this->vec[0];
+	}
+
+	double* end() {
+		return &this->vec[0] + vec.size();
+	}
+
+	double& operator[](int index) {
+		return this->vec[index];
+	}
+
+
+	bool operator == (Vector anthor) {
+		assert(this->vec.size() == anthor.vec.size());
+		return this->underlying() == anthor.underlying();
+	}
+
+	Vector operator+(Vector anthor) {
+		assert(this->vec.size() == anthor.vec.size());
+		std::vector<double> tempvec;
+		for (auto i = 0; i != this->vec.size(); ++i) {
+			tempvec.push_back(this->vec[i] + anthor.vec[i]);
+		}
+		return Vector(tempvec);
+	}
+
+	Vector operator+(double ele) {
+		std::vector<double> tempvec;
+		for (auto i = 0; i != this->vec.size(); ++i) {
+			tempvec.push_back(this->vec[i] + ele);
+		}
+		return Vector(tempvec);
+	}
+
+	Vector operator +() {
+		std::vector<double> tempvec;
+		for (auto i = 0; i != this->vec.size(); ++i) {
+			tempvec.push_back(this->vec[i] * 1);
+		}
+		return Vector(tempvec);
+	}
+
+	Vector operator - (Vector anthor) {
+		assert(this->vec.size() == anthor.vec.size());
+		std::vector<double> tempvec;
+		for (auto i = 0; i != this->vec.size(); ++i) {
+			tempvec.push_back(this->vec[i] - anthor.vec[i]);
+		}
+		return Vector(tempvec);
+	}
+
+	Vector operator-(double ele) {
+		std::vector<double> tempvec;
+		for (auto i = 0; i != this->vec.size(); ++i) {
+			tempvec.push_back(this->vec[i] - ele);
+		}
+		return Vector(tempvec);
+	}
+
+	Vector operator -() {
+		std::vector<double> tempvec;
+		for (auto i = 0; i != this->vec.size(); ++i) {
+			tempvec.push_back(this->vec[i] * (-1));
+		}
+		return Vector(tempvec);
+	}
+
+	Vector operator*(double ele) {
+		std::vector<double> tempvec;
+		for (auto i = 0; i != this->vec.size(); ++i) {
+			tempvec.push_back(this->vec[i] * ele);
+		}
+		return Vector(tempvec);
+	}
+
+	friend Vector operator*(double ele, Vector vec) {
+		std::vector<double> tempvec;
+		for (auto i = 0; i != vec.size(); ++i) {
+			tempvec.push_back(vec[i] * ele);
+		}
+		return Vector(tempvec);
+	}
+
+	Vector operator/(double ele) {
+		std::vector<double> tempvec;
+		for (auto i = 0; i != this->vec.size(); ++i) {
+			tempvec.push_back(this->vec[i] / ele);
+		}
+		return Vector(tempvec);
+	}
+
+	friend ostream& operator<<(ostream& out, Vector vec) {
+		cout << "Vector:[ ";
+		for (auto i = 0; i != vec.size(); ++i) {
+			if (i <= vec.size() - 2) {
+				cout << vec[i] << " , ";
+			}
+			else {
+				cout << vec[i];
+			}
+		}
+		cout << " ] ";
+		return out;
+	}
+
+	double norm() {
+		double sum = 0.0;
+		for (auto& i : *this) {
+			sum += (i * i);
+		}
+		return sqrt(sum);
+	}
+
+	Vector normalize() {
+		auto EPSILON = 1e-8;
+		if (this->norm() < EPSILON) {
+			cerr << "Normalize error! norm is zero." << endl;
+			return Vector();
+		}
+		return Vector(this->vec) / this->norm();
+	}
+
+	double dot(Vector& anthor) {
+		assert(this->size() == anthor.size());
+		double sum = 0.0;
+		for (auto i = 0; i != this->size(); ++i) {
+			sum += (this->vec[i] * anthor[i]);
+		}
+		return sum;
+	}
+
+	double dot(Vector&& anthor) {
+		assert(this->size() == anthor.size());
+		double sum = 0.0;
+		for (auto i = 0; i != this->size(); ++i) {
+			sum += (this->vec[i] * anthor[i]);
+		}
+		return sum;
+	}
+};
+
