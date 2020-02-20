@@ -1,0 +1,175 @@
+#pragma once
+
+#include "Matrix.h"
+#include <cmath>
+#include <algorithm>
+
+double EPSILON = 1e-8;
+
+bool is_zero(double x) {
+	return abs(x) < EPSILON;
+}
+
+bool is_equal(double a, double b) {
+	return abs(a - b) < EPSILON;
+}
+
+
+class LinearSystem
+{
+	int _m, _n;
+public:
+	Matrix Ab;
+	Vector pivots;
+
+	LinearSystem(Matrix A) {
+		this->_m = A.row_num();
+		this->_n = A.col_num();
+
+		for (auto& vec : A) {
+			Ab._values.push_back(vec);
+		}
+	}
+
+	LinearSystem(Matrix A, Vector b) {
+		assert(A.row_num() == b.size());
+		this->_m = A.row_num();
+		this->_n = A.col_num();
+
+		for (auto i = 0; i < _m; ++i) {
+			auto temp = A.row_vector(i);
+			temp.append(b[i]);
+			Ab.append(temp);
+		}
+	}
+
+	LinearSystem(Matrix A, Matrix B) {
+		this->_m = A.row_num();
+		this->_n = A.col_num();
+
+		for (auto i = 0; i < _m; ++i) {
+			auto tempVec = A.row_vector(i);
+			for (int j = 0; j < B.col_num(); ++j) {
+				tempVec.vec.push_back(A.row_vector(i)[j]);
+			}
+			Ab.append(tempVec);
+		}
+	}
+
+	Matrix _Mat() {
+		return this->Ab;
+	}
+
+	int _max_row(int index_i, int index_j, int n) {
+		auto best = this->Ab[index_i][index_j];
+		auto ret = index_i;
+
+		for (auto i = index_i + 1; i < n; ++i) {
+			if (this->Ab[i][index_j] > best) {
+				best = this->Ab[i][index_j];
+				ret = i;
+			}
+		}
+		return ret;
+	}
+
+	void _forward() {
+		int i = 0;
+		int k = 0;
+		while ((i < this->_m && k < this->_n)) {
+			auto max_row = this->_max_row(i, k, this->_m);
+			auto t = this->Ab._values[i];
+			this->Ab._values[i] = this->Ab._values[max_row];
+			this->Ab._values[max_row] = t;
+
+			if (is_zero(this->Ab[i][k])) {
+				k += 1;
+			}
+			else
+			{
+				this->Ab._values[i] = (this->Ab[i] / this->Ab[i][k]).vec;
+				for (int j = i + 1; j < _m; ++j) {
+					this->Ab._values[j] = (this->Ab[j] - this->Ab[j][k] * this->Ab[i]).underlying();
+				}
+				this->pivots.append(k);
+				i += 1;
+			}
+		}
+	}
+
+	void _backward() {
+		int n = pivots.size();
+		for (auto i = n - 1; i != -1; --i) {
+			auto k = this->pivots[i];
+			for (auto j = i - 1; j != -1; --j) {
+				this->Ab._values[j] = (this->Ab[j] - this->Ab[j][k] * this->Ab[i]).underlying();
+			}
+		}
+
+	}
+
+	bool gauss_jordan_elimination() {
+		this->_forward();
+		this->_backward();
+		for (int i = pivots.size(); i < _m; ++i) {
+			if (is_zero(Ab[i][this->_n - 1]) != true) { return false; }
+		}
+		return true;
+	}
+
+	void fancy_print() {
+		for (auto& i : this->Ab._values) {
+			for (int j = 0; j != i.size(); j++) {
+				cout << i[j] << " ";
+				if (j == i.size() - 2) {
+					cout << "| ";
+				}
+			}
+			cout << endl;
+		}
+	}
+
+	Matrix inv() {
+		if (this->_m != this->_n)
+		{
+			return Matrix();
+		}
+
+		int n = this->_m;
+		if (this->gauss_jordan_elimination() == false)
+		{
+			return Matrix();
+		}
+
+		vector<vector<double>> list2d;
+		for (auto& row : this->Ab) {
+			vector<double> t;
+			for (int i = n; i < 2 * n; ++i) {
+				t.push_back(row[i]);
+			}
+			list2d.push_back(t);
+		}
+
+		return Matrix(list2d);
+	}
+
+	int rank()
+	{
+		this->gauss_jordan_elimination();
+		auto  zero = Vector().zero(this->_n);
+		int sum = 0;
+		for (auto& row : this->Ab)
+		{
+			if (row != zero.vec)
+			{
+				sum++;
+			}
+		}
+		return sum;
+	}
+
+};
+
+
+
+
